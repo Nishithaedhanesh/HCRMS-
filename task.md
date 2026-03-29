@@ -1,0 +1,22 @@
+# Implement Admin Bills & Mess Bill Calculation
+
+- [x] 1. Create Data Migration (v6)
+  - [x] Create `Bills` table.
+  - [x] Create `Mess_Bills` table with all necessary parameters (fine dates included).
+- [x] 2. Update Backend Routes
+  - [x] `admin.js`: Add CRUD for Bills.
+  - [x] `admin.js`: Add Mess Bill Generation (fetching points, inmates).
+  - [x] `admin.js`: Add endpoint to save Mess Bills.
+  - [x] `admin.js`: Expose Reports endpoints for Admin (`/daily-detailed-reports`, `/monthly-reports`).
+  - [x] `student.js`: Update the student dashboard endpoint to fetch month's fee based on `Mess_Bills`.
+- [x] 3. Update Frontend Admin UI (`admin.html` and `admin.js`)
+  - [x] Add Sidebar/Grid Nav for new sections.
+  - [x] "Manage Bills" Form and Table.
+  - [x] "Generate Mess Bill" Form (auto-calcs Total, manual Guest Charge, fine dates).
+  - [x] "Mess Bill Preview" matching the physical image, with Print functionality.
+  - [x] "Mess Reports" Section to view data exactly like Committee.
+- [x] 4. Update Frontend Student UI (`student.js`/`student.html`)
+  - [x] Show fee formula and breakdown.
+- [/] 5. Run Migration & Test
+  - [x] Execute `node run-migration-v6.js`.
+  - [x] Test the pipeline end-to-end.

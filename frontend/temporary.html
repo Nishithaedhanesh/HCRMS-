@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporary Inmate Dashboard - Hostel Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color: #e2e8f0; margin: 0; padding: 0;">
+    <div class="mobile-dashboard">
+        <!-- App Header -->
+        <div class="app-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <div>
+                <h3 style="margin:0; font-size:1.4rem; font-weight:700;">Temporary Inmate</h3>
+                <p style="margin:4px 0 0 0; font-size:0.85rem; opacity:0.9;">Welcome, <span id="userName" style="font-weight:bold;">User</span></p>
+            </div>
+            <div>
+                <span style="font-size:2rem; opacity: 0.8;">⏱️</span>
+            </div>
+        </div>
+
+        <!-- Top Stats Panel -->
+        <div class="top-widget-grid">
+            <div class="stat-widget">
+                <h2 style="color: #10b981;" id="totalMeals">0</h2>
+                <p>Billed Days</p>
+            </div>
+            <div class="stat-widget">
+                <h2 style="color: #e65100;">₹<span id="totalFee">0.00</span></h2>
+                <p>Calculated Fee</p>
+            </div>
+        </div>
+
+        <!-- Feature Grid (The colorful cards) -->
+        <div class="feature-grid" id="mainGrid">
+            <div class="feature-card" onclick="openSection('markAttSection')">
+                <div class="feature-icon bg-blue">📍</div>
+                <span>Mark Att.</span>
+            </div>
+            <div class="feature-card" onclick="openSection('attHistorySection')">
+                <div class="feature-icon bg-purple">📅</div>
+                <span>Att. History</span>
+            </div>
+            <div class="feature-card" onclick="openSection('enterMealSection')">
+                <div class="feature-icon bg-orange">🍽️</div>
+                <span>Enter Meal</span>
+            </div>
+            <div class="feature-card" onclick="openSection('regComplaintSection')">
+                <div class="feature-icon bg-red">⚠️</div>
+                <span>New Issue</span>
+            </div>
+            <div class="feature-card" onclick="openSection('myComplaintsSection')">
+                <div class="feature-icon bg-yellow">📋</div>
+                <span>My Issues</span>
+            </div>
+            <div class="feature-card" onclick="openSection('summarySection')">
+                <div class="feature-icon bg-green">📄</div>
+                <span>Mess Statements</span>
+            </div>
+        </div>
+
+        <!-- HIDDEN VIEW SECTIONS -->
+
+        <!-- 1. Mark Attendance -->
+        <div id="markAttSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('markAttSection')">← Back to Dashboard</div>
+            <h3>Mark Daily Attendance</h3>
+            <form id="attendanceForm" style="margin-top: 1rem;">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="attDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="attStatus" required>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                    </select>
+                </div>
+                <div id="attMsg" class="error-msg"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 20px; padding: 12px; margin-top: 10px; background: #10b981; border: none;">Mark Attendance</button>
+            </form>
+        </div>
+
+        <!-- 2. Attendance History -->
+        <div id="attHistorySection" class="view-section">
+            <div class="back-btn" onclick="closeSection('attHistorySection')">← Back to Dashboard</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin:0;">Attendance History</h3>
+                <input type="month" id="attMonthFilter" style="padding: 0.4rem; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 4px;" required>
+            </div>
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table class="slot-table" id="attHistoryTable" style="margin: 0; min-width: 100%;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. Enter Meal -->
+        <div id="enterMealSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('enterMealSection')">← Back to Dashboard</div>
+            <h3>Enter Next Day Meal</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem; padding: 10px; background: white; border-radius: 8px;">Check if meals are enabled by committee before entering.</p>
+            <form id="mealForm" style="padding: 0; background: transparent; box-shadow: none;">
+                <div class="form-group" style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+                    <label>Select Date</label>
+                    <input type="date" id="mealDate" required style="width: 100%; border: 1px solid #ddd; padding: 8px; border-radius: 4px;">
+                </div>
+                <div style="background: white; border-radius: 12px; overflow: hidden; margin-bottom: 15px;">
+                    <table class="slot-table" style="margin: 0; width: 100%;">
+                        <thead style="background: #f1f5f9;">
+                            <tr>
+                                <th>Time Slot</th>
+                                <th>Opt-In</th>
+                                <th>Non-Veg?</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mealTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="mealMsg" class="error-msg"></div>
+                <button type="submit" class="btn btn-primary" id="saveMealsBtn" disabled style="width: 100%; border-radius: 20px; padding: 12px; background: #10b981; border: none;">Save Meal Entries</button>
+            </form>
+        </div>
+
+        <!-- 4. Fee & History Statement -->
+        <div id="summarySection" class="view-section">
+            <div class="back-btn" onclick="closeSection('summarySection')">← Back to Dashboard</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin:0;">Monthly Statement</h3>
+                <input type="month" id="summaryMonth" style="padding: 0.4rem; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 4px;" required>
+            </div>
+            
+            <p style="text-align: center; margin-top: 1rem; color: #666; background: white; padding: 10px; border-radius: 8px;">
+                Based on per-day rate: ₹<span id="rateDisplay">0</span>
+            </p>
+
+            <h4 style="margin: 20px 0 10px; color: #2b2b2b;">Recent Meal Entries</h4>
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table id="recentMealsTable" style="margin: 0; min-width: 500px;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Date</th>
+                            <th>Morning</th>
+                            <th>Noon</th>
+                            <th>Evening</th>
+                            <th>Night</th>
+                            <th>Icecream</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. Register Complaint -->
+        <div id="regComplaintSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('regComplaintSection')">← Back to Dashboard</div>
+            <h3>Register Complaint</h3>
+            <form id="complaintForm" style="margin-top: 1rem;">
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="compDesc" rows="5" style="width:100%; padding:0.5rem; border:1px solid #d1d5db; border-radius:4px;" required placeholder="Describe your issue in detail..."></textarea>
+                </div>
+                <div id="compMsg" class="error-msg"></div>
+                <button type="button" class="btn btn-primary" onclick="analyzeComplaint()" style="width: 100%; border-radius: 20px; padding: 12px; margin-top: 10px; background: #10b981; border: none;">Analyze & Register</button>
+            </form>
+        </div>
+
+        <!-- 6. My Complaints -->
+        <div id="myComplaintsSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('myComplaintsSection')">← Back to Dashboard</div>
+            <h3>My Complaints</h3>
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table id="complaintsTable" style="margin: 0; min-width: 400px;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <div class="bottom-nav">
+            <div class="bottom-nav-item active" onclick="closeAllSections()">
+                <div>🏠</div>
+                <span>Home</span>
+            </div>
+            <div class="bottom-nav-item" onclick="openPasswordModal()">
+                <div>🔒</div>
+                <span>Reset Pwd</span>
+            </div>
+            <div class="bottom-nav-item" onclick="logout()">
+                <div>🚪</div>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ML Simulated Popup for Complaints -->
+    <div id="mlModal" class="modal-overlay">
+        <div class="modal-content" style="text-align: center; border-radius: 15px;">
+            <h3 style="margin-bottom: 1rem; color: #10b981;">AI Analysis</h3>
+            <p style="margin-bottom: 1rem;">We automatically categorized your complaint as:</p>
+            <h2 id="mlCategoryText" style="margin-bottom: 1.5rem; color: #333; font-weight: bold;">Category</h2>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn btn-primary" onclick="confirmComplaint()" style="border-radius:20px; padding:8px 20px; background: #10b981; border: none;">Proceed</button>
+                <button class="btn btn-danger" onclick="closeMlModal()" style="border-radius:20px; padding:8px 20px;">Cancel / Edit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Interaction Scripts -->
+    <script>
+        function openSection(id) {
+            document.getElementById('mainGrid').style.display = 'none';
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
+        }
+        function closeSection(id) {
+            document.getElementById(id).classList.remove('active');
+            document.getElementById('mainGrid').style.display = 'grid';
+        }
+        function closeAllSections() {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('mainGrid').style.display = 'grid';
+        }
+    </script>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/temporary.js"></script>
+</body>
+</html>

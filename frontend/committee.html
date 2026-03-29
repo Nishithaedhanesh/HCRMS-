@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Committee Dashboard - Hostel Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color: #e2e8f0; margin: 0; padding: 0;">
+    <div class="mobile-dashboard">
+        <!-- App Header -->
+        <div class="app-header">
+            <div>
+                <h3 style="margin:0; font-size:1.4rem; font-weight:700;">Committee Portal</h3>
+                <p style="margin:4px 0 0 0; font-size:0.85rem; opacity:0.9;">Welcome, <span id="userName" style="font-weight:bold;">User</span></p>
+            </div>
+            <div>
+                <span style="font-size:2rem; opacity: 0.8;">🏛️</span>
+            </div>
+        </div>
+
+
+        <!-- Feature Grid (The colorful cards) -->
+        <div class="feature-grid" id="mainGrid">
+            <div class="feature-card" onclick="openSection('configMealSection')">
+                <div class="feature-icon bg-blue">⚙️</div>
+                <span>Config Meals</span>
+            </div>
+            <div class="feature-card" onclick="openSection('monthlyCountSection')">
+                <div class="feature-icon bg-green">📊</div>
+                <span>Monthly Count</span>
+            </div>
+            <div class="feature-card" onclick="openSection('reviewAttSection')">
+                <div class="feature-icon bg-purple">👁️</div>
+                <span>Attendance</span>
+            </div>
+            <div class="feature-card" onclick="openSection('detailedReportSection')">
+                <div class="feature-icon bg-orange">📋</div>
+                <span>Daily Details</span>
+            </div>
+        </div>
+
+        <!-- HIDDEN VIEW SECTIONS -->
+
+        <!-- 1. Configure Meal Setup -->
+        <div id="configMealSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('configMealSection')">← Back to Dashboard</div>
+            <h3>Configure Meals</h3>
+            <form id="mealSettingsForm" style="margin-top: 1rem;">
+                <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px;">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="date" id="settingDate" required style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                        <button type="button" class="btn btn-secondary" onclick="buildSettingsTable()" style="border-radius: 8px; padding: 10px 20px;">View</button>
+                    </div>
+                </div>
+                
+                <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                    <table class="slot-table" style="margin: 0; width: 100%;">
+                        <thead style="background: #f1f5f9;">
+                            <tr>
+                                <th>Time Slot</th>
+                                <th>Enable Entry</th>
+                                <th>Non-Veg Options?</th>
+                            </tr>
+                        </thead>
+                        <tbody id="settingsTableBody">
+                            <!-- JS injected -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="settingMsg" class="error-msg"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 20px; padding: 12px; margin-top: 15px;">Save Settings</button>
+            </form>
+        </div>
+
+        <!-- 2. Monthly Student Meal Counts -->
+        <div id="monthlyCountSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('monthlyCountSection')">← Back to Dashboard</div>
+            <h3>Monthly Student Meal Counts</h3>
+            
+            <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px;">
+                    <input type="month" id="monthlyReportDate" required style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                    <button class="btn btn-primary" onclick="loadMonthlyReport()" style="border-radius: 8px; padding: 10px 20px;">View</button>
+                </div>
+            </div>
+            
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table id="monthlyTable" style="margin: 0; min-width: 400px;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Block</th>
+                            <th>Room No</th>
+                            <th>Total Meals</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. Daily Attendance Review -->
+        <div id="reviewAttSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('reviewAttSection')">← Back to Dashboard</div>
+            <h3>Daily Attendance Review</h3>
+            
+            <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px;">
+                    <input type="date" id="attReviewDate" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                    <button class="btn btn-primary" onclick="loadAttendanceReview()" style="border-radius: 8px; padding: 10px 20px;">View</button>
+                </div>
+            </div>
+            
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); max-height: 400px;">
+                <table class="data-table" id="attReviewTable" style="margin: 0; min-width: 400px;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Name</th>
+                            <th>Block</th>
+                            <th>Room No</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. Detailed Daily Reports -->
+        <div id="detailedReportSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('detailedReportSection')">← Back to Dashboard</div>
+            <h3>Detailed Daily Reports</h3>
+            
+            <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px;">
+                    <input type="date" id="reportDate" required style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                    <button class="btn btn-primary" onclick="loadDetailedReport()" style="border-radius: 8px; padding: 10px 20px;">View</button>
+                </div>
+            </div>
+            
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table id="detailedReportTable" style="margin: 0; min-width: 800px;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Name</th>
+                            <th>Room</th>
+                            <th>Block</th>
+                            <th>Morning</th>
+                            <th>Noon</th>
+                            <th>Evening</th>
+                            <th>Night</th>
+                            <th>Icecream</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <div class="bottom-nav">
+            <div class="bottom-nav-item active" onclick="closeAllSections()">
+                <div>🏠</div>
+                <span>Home</span>
+            </div>
+            <div class="bottom-nav-item" onclick="openPasswordModal()">
+                <div>🔒</div>
+                <span>Reset Pwd</span>
+            </div>
+            <div class="bottom-nav-item" onclick="logout()">
+                <div>🚪</div>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- UI Interaction Scripts -->
+    <script>
+        function openSection(id) {
+            document.getElementById('mainGrid').style.display = 'none';
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
+        }
+        function closeSection(id) {
+            document.getElementById(id).classList.remove('active');
+            document.getElementById('mainGrid').style.display = 'grid';
+        }
+        function closeAllSections() {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('mainGrid').style.display = 'grid';
+        }
+    </script>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/committee.js"></script>
+</body>
+</html>

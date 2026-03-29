@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Hostel Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color: #e2e8f0; margin: 0; padding: 0;">
+    <div class="mobile-dashboard">
+        <!-- App Header -->
+        <div class="app-header">
+            <div>
+                <h3 style="margin:0; font-size:1.4rem; font-weight:700;">Admin Portal</h3>
+                <p style="margin:4px 0 0 0; font-size:0.85rem; opacity:0.9;">Welcome, <span id="userName" style="font-weight:bold;">User</span></p>
+            </div>
+            <div>
+                <span style="font-size:2rem; opacity: 0.8;">⚙️</span>
+            </div>
+        </div>
+
+
+        <!-- Feature Grid (The colorful cards) -->
+        <div class="feature-grid" id="mainGrid">
+            <div class="feature-card" onclick="openSection('addUserSection')">
+                <div class="feature-icon bg-blue">👤</div>
+                <span>Create User</span>
+            </div>
+            <div class="feature-card" onclick="openSection('tempFeesSection')">
+                <div class="feature-icon" style="background: #3b82f6; color: white;">💰</div>
+                <span>Temp Inmate Fees</span>
+            </div>
+            <div class="feature-card" onclick="openSection('viewUsersSection'); if(typeof loadUsers === 'function') loadUsers();">
+                <div class="feature-icon bg-orange">👥</div>
+                <span>System Users</span>
+            </div>
+            <div class="feature-card" onclick="openSection('statsSection'); if(typeof loadStats === 'function') loadStats();">
+                <div class="feature-icon bg-green">📊</div>
+                <span>Dashboard Stats</span>
+            </div>
+            <div class="feature-card" onclick="openSection('manageBillsSection'); if(typeof initBills === 'function') initBills();">
+                <div class="feature-icon" style="background: #ef4444; color: white;">🧾</div>
+                <span>Manage Bills</span>
+            </div>
+            <div class="feature-card" onclick="openSection('generateBillSection'); if(typeof initGenerateBill === 'function') initGenerateBill();">
+                <div class="feature-icon" style="background: #8b5cf6; color: white;">📝</div>
+                <span>Generate Mess Bill</span>
+            </div>
+            <div class="feature-card" onclick="openSection('viewMessBillsSection'); if(typeof loadSavedMessBills === 'function') loadSavedMessBills();">
+                <div class="feature-icon" style="background: #06b6d4; color: white;">💾</div>
+                <span>View Mess Bills</span>
+            </div>
+            <div class="feature-card" onclick="openSection('messReportsSection'); if(typeof initReports === 'function') initReports();">
+                <div class="feature-icon" style="background: #ec4899; color: white;">📋</div>
+                <span>Mess Reports</span>
+            </div>
+        </div>
+
+        <!-- HIDDEN VIEW SECTIONS -->
+
+        <!-- 0. Set Temporary Inmate Fees Section -->
+        <div id="tempFeesSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('tempFeesSection')">← Back to Dashboard</div>
+            <h3>Set Temporary Inmate Fee</h3>
+            <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-top: 10px;">
+                <form id="tempFeeForm">
+                    <div class="form-group">
+                        <label>Select Month</label>
+                        <input type="month" id="tempFeeMonth" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Per Day Rate (₹)</label>
+                        <input type="number" step="0.01" id="tempFeeRate" required>
+                    </div>
+                    <div id="tempFeeMsg" class="error-msg" style="margin-bottom: 10px;"></div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 20px; padding: 12px;">Save Fee</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 1. Add User Section -->
+        <div id="addUserSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('addUserSection')">← Back to Dashboard</div>
+            <h3>Add New User</h3>
+            <form id="addUserForm" style="margin-top: 1rem;">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email ID</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="role" required onchange="toggleRoleFields()">
+                        <option value="student">Student</option>
+                        <option value="temporary">Temporary Inmate</option>
+                        <option value="committee">Committee</option>
+                        <option value="warden">Warden</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                
+                <div id="studentFields">
+                    <div class="form-group">
+                        <label>Room No</label>
+                        <input type="text" id="room_no">
+                    </div>
+                    <div class="form-group">
+                        <label>Block</label>
+                        <input type="text" id="block">
+                    </div>
+                </div>
+                
+                <div class="form-group hidden" id="typeField">
+                    <label>Hostel Type</label>
+                    <select id="hostel_type">
+                        <option value="LH">Ladies Hostel (LH)</option>
+                        <option value="MH">Men's Hostel (MH)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group hidden" id="groupField">
+                    <label>Assigned Hostel Group</label>
+                    <select id="hostel_group">
+                        <option value="LHA&C">LHA & C</option>
+                        <option value="LHB">LHB</option>
+                        <option value="MHA">MHA</option>
+                        <option value="MHB">MHB</option>
+                    </select>
+                </div>
+
+                <div id="addMsg" class="error-msg"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: 20px; padding: 12px; margin-top: 10px;">Add User</button>
+            </form>
+        </div>
+
+        <!-- 2. System Users Section -->
+        <div id="viewUsersSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('viewUsersSection')">← Back to Dashboard</div>
+            <h3>System Users</h3>
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table id="usersTable" style="margin: 0; min-width: 600px;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Group / Blk</th>
+                            <th>Room No</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+            <br>
+            <h4 style="margin-left: 5px;">Temporary Inmates</h4>
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table id="tempUsersTable" style="margin: 0; min-width: 600px;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Hostel Type</th>
+                            <th>Block</th>
+                            <th>Room No</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. Dashboard Stats Section -->
+        <div id="statsSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('statsSection')">← Back to Dashboard</div>
+            <h3>Dashboard Statistics</h3>
+            
+            <div style="margin: 15px 0; background: white; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;">
+                <label style="font-weight: bold; color: #555;">Select Month:</label>
+                <input type="month" id="statsMonth" onchange="loadStats()" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+
+            <h4 style="margin: 20px 0 10px;">Total Current Regular Students</h4>
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px;">
+                <table id="totalBlockTable" style="margin: 0; width: 100%;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Hostel Type</th>
+                            <th>Block</th>
+                            <th>Total Students</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 style="margin: 20px 0 10px;">Total Current Temporary Inmates</h4>
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px;">
+                <table id="totalTempTable" style="margin: 0; width: 100%;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Hostel Type</th>
+                            <th>Block</th>
+                            <th>Total Students</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 style="margin: 20px 0 10px;">Active Students in Month (Based on Meals)</h4>
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table id="activeMonthTable" style="margin: 0; width: 100%;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Hostel Type</th>
+                            <th>Block</th>
+                            <th>Active Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. Manage Bills Section -->
+        <div id="manageBillsSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('manageBillsSection')">← Back to Dashboard</div>
+            <h3>Manage Bills</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <input type="month" id="billsMonth" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; flex: 1;">
+                <select id="billsHostelGroup" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; flex: 1;">
+                    <option value="LHA&C">LHA & C</option>
+                    <option value="LHB">LHB</option>
+                    <option value="MHA">MHA</option>
+                    <option value="MHB">MHB</option>
+                </select>
+                <button class="btn btn-primary" onclick="loadBills()">Load</button>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <h4>Add New Bill</h4>
+                <form id="addBillForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group"><label>Invoice No</label><input type="text" id="billInvoiceNo"></div>
+                    <div class="form-group"><label>Shop Name</label><input type="text" id="billShop" required></div>
+                    <div class="form-group"><label>Date</label><input type="date" id="billDate" required></div>
+                    <div class="form-group"><label>Bill Amount</label><input type="number" step="0.01" id="billAmount" required oninput="calcBillTotal()"></div>
+                    <div class="form-group"><label>Debt (If any)</label><input type="number" step="0.01" id="billDebt" value="0" oninput="calcBillTotal()"></div>
+                    <div class="form-group"><label>Total</label><input type="number" id="billTotalCalc" disabled></div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Add Bill</button>
+                    </div>
+                </form>
+            </div>
+
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table id="billsTable" style="margin: 0; min-width: 600px;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>SI No</th>
+                            <th>Date</th>
+                            <th>Invoice No</th>
+                            <th>Shop Name</th>
+                            <th>Amount</th>
+                            <th>Debt</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <h4 style="margin: 20px 0 10px;">Shop Totals</h4>
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <table id="shopTotalsTable" style="margin: 0; width: 100%;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th>Shop Name</th>
+                            <th>Total Amount Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. Generate Mess Bill Section -->
+        <div id="generateBillSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('generateBillSection')">← Back to Dashboard</div>
+            <h3>Generate Mess Bill</h3>
+            
+            <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <div class="form-group"><label>Month</label><input type="month" id="genMonth" required></div>
+                    <div class="form-group">
+                        <label>Hostel Group</label>
+                        <select id="genGroup" required>
+                            <option value="LHA&C">LHA & C</option>
+                            <option value="LHB">LHB</option>
+                            <option value="MHA">MHA</option>
+                            <option value="MHB">MHB</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Opening Balance</label><input type="number" step="0.01" id="genOpening" value="0"></div>
+                    <div class="form-group"><label>Closing Stock</label><input type="number" step="0.01" id="genClosing" value="0"></div>
+                    <div class="form-group"><label>Guest Charge</label><input type="number" step="0.01" id="genGuest" value="0"></div>
+                    <div class="form-group"><label>Establishment Charge (Block)</label><input type="number" step="0.01" id="genEstt" value="0"></div>
+                    <div class="form-group"><label>Cook Charge (All Messes)</label><input type="number" step="0.01" id="genCook" value="0"></div>
+                </div>
+                <!-- Fines -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+                    <div class="form-group"><label>No Fine Due Date</label><input type="date" id="noFineDate"></div>
+                    <div class="form-group"><label>Rs.30 Fine Due Date</label><input type="date" id="fineDate"></div>
+                    <div class="form-group"><label>Removal Due Date</label><input type="date" id="removalDate"></div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="calculateMessBill()">Calculate Bill</button>
+            </div>
+
+            <!-- Printable Bill Preview -->
+            <div id="printBillArea" class="hidden" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
+                    <h3 style="margin: 0; text-transform: uppercase;">MESS BILL CALCULATION FOR THE MONTH OF <span id="lblMonth"></span></h3>
+                    <h4 style="margin: 5px 0 0 0;"><span id="lblGroup"></span> BLOCKS</h4>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;" border="1">
+                    <thead style="background: #f1f5f9;">
+                        <tr><th style="padding: 5px; text-align: left;">Details of Expenditure</th><th style="padding: 5px;">Amount (Rs)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="padding: 5px;">OPENING BALANCE</td><td style="padding: 5px; text-align: right;" id="resOpBal"></td></tr>
+                        <tr><td style="padding: 5px;">PURCHASE</td><td style="padding: 5px; text-align: right;" id="resPurch"></td></tr>
+                        <tr style="font-weight: bold; background: #fafafa;"><td style="padding: 5px; text-align: right;">TOTAL</td><td style="padding: 5px; text-align: right;" id="resSubTot1"></td></tr>
+                        <tr><td style="padding: 5px;">GUEST CHARGE</td><td style="padding: 5px; text-align: right;" id="resGuest"></td></tr>
+                        <tr><td style="padding: 5px;">CLOSING STOCK</td><td style="padding: 5px; text-align: right;" id="resClosing"></td></tr>
+                        <tr style="font-weight: bold; background: #fafafa;"><td style="padding: 5px; text-align: right;">TOTAL</td><td style="padding: 5px; text-align: right;" id="resSubTot2"></td></tr>
+                        <tr><td style="padding: 5px; font-weight: bold;">NET EXPENDITURE</td><td style="padding: 5px; text-align: right; font-weight: bold;" id="resNet"></td></tr>
+                        
+                        <tr><td style="padding: 5px;">TOTAL NO. OF INMATES</td><td style="padding: 5px; text-align: right;" id="resInmates"></td></tr>
+                        <tr><td style="padding: 5px;">TOTAL NO OF POINTS</td><td style="padding: 5px; text-align: right;" id="resPoints"></td></tr>
+                        <tr style="background: #e2e8f0; font-weight: bold;"><td style="padding: 5px;">RATE PER DAY</td><td style="padding: 5px; text-align: right;" id="resRate"></td></tr>
+                        
+                        <tr><td style="padding: 5px;">ESTABLISHMENT CHARGE</td><td style="padding: 5px; text-align: right;" id="resEsttCharge"></td></tr>
+                        <tr style="background: #e2e8f0; font-weight: bold;"><td style="padding: 5px;">ESTT. PER HEAD</td><td style="padding: 5px; text-align: right;" id="resEsttHead"></td></tr>
+                        
+                        <tr><td style="padding: 5px;">TOTAL NUMBER OF INMATES IN ALL MESSES</td><td style="padding: 5px; text-align: right;" id="resAllInmates"></td></tr>
+                        <tr><td style="padding: 5px;">COOK CHARGE (all messes)</td><td style="padding: 5px; text-align: right;" id="resCookCharge"></td></tr>
+                        <tr style="background: #e2e8f0; font-weight: bold;"><td style="padding: 5px;">COOK CHARGE PER HEAD</td><td style="padding: 5px; text-align: right;" id="resCookHead"></td></tr>
+                    </tbody>
+                </table>
+
+                <div style="font-size: 0.9rem; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px;">
+                    <p>Mess dues will be collected without fine up to <strong id="lblNoFineDate">___</strong></p>
+                    <p>Mess dues will be collected with fine of Rs.30/- up to <strong id="lblFineDate">___</strong></p>
+                    <p>Afterwards an additional fine of Re 1/- per day will be charged for late payment. Name will be removed from the Hostel Roll if payment is not made on or before <strong id="lblRemovalDate">___</strong></p>
+                </div>
+
+                <div style="margin-top: 40px; display: flex; justify-content: flex-end; padding-right: 50px;">
+                    <div style="text-align: center;">
+                        <p style="margin: 0; padding-bottom: 40px;">Warden</p>
+                        <strong>Govt. College of Engineering<br>Kannur</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div id="billActions" class="hidden" style="margin-top: 15px; display: flex; gap: 10px;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveMessBill()">Save & Publish</button>
+                <button class="btn btn-secondary" style="flex: 1;" onclick="printMessBill()">Print Bill</button>
+            </div>
+        </div>
+
+        <!-- 5b. View Saved Mess Bills Section -->
+        <div id="viewMessBillsSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('viewMessBillsSection')">← Back to Dashboard</div>
+            <h3>View Saved Mess Bills</h3>
+            
+            <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-bottom: 15px;">
+                    <div class="form-group">
+                        <label>Search by Month</label>
+                        <input type="month" id="viewMonth" placeholder="Leave empty to see all">
+                    </div>
+                    <div class="form-group">
+                        <label>Hostel Group</label>
+                        <select id="viewGroup">
+                            <option value="">All Groups</option>
+                            <option value="LHA&C">LHA & C</option>
+                            <option value="LHB">LHB</option>
+                            <option value="MHA">MHA</option>
+                            <option value="MHB">MHB</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" style="align-self: flex-end;" onclick="loadSavedMessBills()">Search</button>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 15px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: #f1f5f9;">
+                        <tr>
+                            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #cbd5e1;">Month</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #cbd5e1;">Hostel Group</th>
+                            <th style="padding: 10px; text-align: right; border-bottom: 2px solid #cbd5e1;">Rate/Day</th>
+                            <th style="padding: 10px; text-align: right; border-bottom: 2px solid #cbd5e1;">Estt/Head</th>
+                            <th style="padding: 10px; text-align: right; border-bottom: 2px solid #cbd5e1;">Cook/Head</th>
+                            <th style="padding: 10px; text-align: right; border-bottom: 2px solid #cbd5e1;">Net Exp</th>
+                            <th style="padding: 10px; text-align: center; border-bottom: 2px solid #cbd5e1;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savedBillsTable">
+                        <tr><td colspan="7" style="padding: 20px; text-align: center; color: #94a3b8;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Saved Bill Details Display -->
+            <div id="savedBillDisplayArea" class="hidden" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <button class="btn btn-secondary" style="margin-bottom: 15px;" onclick="closeSavedBillView()">← Back to Bills List</button>
+                <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
+                    <h3 style="margin: 0; text-transform: uppercase;">MESS BILL CALCULATION FOR THE MONTH OF <span id="savedLblMonth"></span></h3>
+                    <h4 style="margin: 5px 0 0 0;"><span id="savedLblGroup"></span> BLOCKS</h4>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;" border="1">
+                    <thead style="background: #f1f5f9;">
+                        <tr><th style="padding: 5px; text-align: left;">Details of Expenditure</th><th style="padding: 5px;">Amount (Rs)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="padding: 5px;">OPENING BALANCE</td><td style="padding: 5px; text-align: right;" id="savedResOpBal"></td></tr>
+                        <tr><td style="padding: 5px;">PURCHASE</td><td style="padding: 5px; text-align: right;" id="savedResPurch"></td></tr>
+                        <tr style="font-weight: bold; background: #fafafa;"><td style="padding: 5px; text-align: right;">TOTAL</td><td style="padding: 5px; text-align: right;" id="savedResSubTot1"></td></tr>
+                        <tr><td style="padding: 5px;">GUEST CHARGE</td><td style="padding: 5px; text-align: right;" id="savedResGuest"></td></tr>
+                        <tr><td style="padding: 5px;">CLOSING STOCK</td><td style="padding: 5px; text-align: right;" id="savedResClosing"></td></tr>
+                        <tr style="font-weight: bold; background: #fafafa;"><td style="padding: 5px; text-align: right;">TOTAL</td><td style="padding: 5px; text-align: right;" id="savedResSubTot2"></td></tr>
+                        <tr><td style="padding: 5px; font-weight: bold;">NET EXPENDITURE</td><td style="padding: 5px; text-align: right; font-weight: bold;" id="savedResNet"></td></tr>
+                        
+                        <tr><td style="padding: 5px;">TOTAL NO. OF INMATES</td><td style="padding: 5px; text-align: right;" id="savedResInmates"></td></tr>
+                        <tr><td style="padding: 5px;">TOTAL NO OF POINTS</td><td style="padding: 5px; text-align: right;" id="savedResPoints"></td></tr>
+                        <tr style="background: #e2e8f0; font-weight: bold;"><td style="padding: 5px;">RATE PER DAY</td><td style="padding: 5px; text-align: right;" id="savedResRate"></td></tr>
+                        
+                        <tr><td style="padding: 5px;">ESTABLISHMENT CHARGE</td><td style="padding: 5px; text-align: right;" id="savedResEsttCharge"></td></tr>
+                        <tr style="background: #e2e8f0; font-weight: bold;"><td style="padding: 5px;">ESTT. PER HEAD</td><td style="padding: 5px; text-align: right;" id="savedResEsttHead"></td></tr>
+                        
+                        <tr><td style="padding: 5px;">TOTAL NUMBER OF INMATES IN ALL MESSES</td><td style="padding: 5px; text-align: right;" id="savedResAllInmates"></td></tr>
+                        <tr><td style="padding: 5px;">COOK CHARGE (all messes)</td><td style="padding: 5px; text-align: right;" id="savedResCookCharge"></td></tr>
+                        <tr style="background: #e2e8f0; font-weight: bold;"><td style="padding: 5px;">COOK CHARGE PER HEAD</td><td style="padding: 5px; text-align: right;" id="savedResCookHead"></td></tr>
+                    </tbody>
+                </table>
+
+                <div style="font-size: 0.9rem; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px;">
+                    <p>Mess dues will be collected without fine up to <strong id="savedLblNoFineDate">___</strong></p>
+                    <p>Mess dues will be collected with fine of Rs.30/- up to <strong id="savedLblFineDate">___</strong></p>
+                    <p>Afterwards an additional fine of Re 1/- per day will be charged for late payment. Name will be removed from the Hostel Roll if payment is not made on or before <strong id="savedLblRemovalDate">___</strong></p>
+                </div>
+
+                <div style="margin-top: 40px; display: flex; justify-content: flex-end; padding-right: 50px;">
+                    <div style="text-align: center;">
+                        <p style="margin: 0; padding-bottom: 40px;">Warden</p>
+                        <strong>Govt. College of Engineering<br>Kannur</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Mess Reports Section -->
+        <div id="messReportsSection" class="view-section">
+            <div class="back-btn" onclick="closeSection('messReportsSection')">← Back to Dashboard</div>
+            <h3>Mess Reports</h3>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <select id="reportType" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;" onchange="toggleReportType()">
+                    <option value="daily">Daily Report</option>
+                    <option value="monthly">Monthly Report</option>
+                </select>
+                <div id="dailyInput"><input type="date" id="reportDate" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"></div>
+                <div id="monthlyInput" class="hidden"><input type="month" id="reportMonth" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"></div>
+                <select id="reportGroup" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    <option value="LHA&C">LHA & C</option>
+                    <option value="LHB">LHB</option>
+                    <option value="MHA">MHA</option>
+                    <option value="MHB">MHB</option>
+                </select>
+                <button class="btn btn-primary" onclick="loadMessReports()">Load</button>
+            </div>
+
+            <div id="reportsContainer" style="overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <div class="bottom-nav">
+            <div class="bottom-nav-item active" onclick="closeAllSections()">
+                <div>🏠</div>
+                <span>Home</span>
+            </div>
+            <div class="bottom-nav-item" onclick="logout()">
+                <div>🚪</div>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Interaction Scripts -->
+    <script>
+        function openSection(id) {
+            document.getElementById('mainGrid').style.display = 'none';
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
+        }
+        function closeSection(id) {
+            document.getElementById(id).classList.remove('active');
+            document.getElementById('mainGrid').style.display = 'grid';
+        }
+        function closeAllSections() {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('mainGrid').style.display = 'grid';
+        }
+    </script>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

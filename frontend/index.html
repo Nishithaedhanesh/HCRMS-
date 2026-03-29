@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Management System - Login</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="gcek-login-body">
+    <header class="gcek-header">
+        <div class="logo-container">
+            <div class="logo-box left">
+                <img src="gcek.jpeg" alt="GCEK Logo" loading="lazy">
+            </div>
+            
+            <div class="header-text">
+                <h1>HOSTEL MANAGEMENT SYSTEM</h1>
+                <p class="address">GOVERNMENT COLLEGE OF ENGINEERING KANNUR</p>
+                <div class="contact-info">
+                    <a href="http://www.gcek.ac.in" target="_blank">www.gcek.ac.in</a>
+                    <span>email: principal@gcek.ac.in</span>
+                    <span>Phone: 0497 2780226</span>
+                    <span>Fax: 0497 2780227</span>
+                </div>
+            </div>
+
+            <div class="logo-box right">
+                <img src="gov.jpeg" alt="Kerala Logo" loading="lazy">
+            </div>
+        </div>
+    </header>
+
+    <div class="login-page-wrapper">
+        <div class="plaque-container left-plaque">
+            <div class="plaque-content">
+                <h3>VISION</h3>
+                <p>A globally renowned institution of excellence in engineering education, research and consultancy.</p>
+            </div>
+        </div>
+
+        <div class="login-card wrapper">
+            <div id="login-content">
+                <div class="container-fluid">
+                    <form id="loginForm" class="gcek-form">
+                        <div class="input-row">
+                            <label>USERNAME <span>*</span></label>
+                            <input type="text" id="email" required>
+                        </div>
+                        <div class="input-row">
+                            <label>PASSWORD <span>*</span></label>
+                            <div class="pwd-wrapper">
+                                <input type="password" id="password" required>
+                                <span class="eye-icon" onclick="const pwd = document.getElementById('password'); pwd.type = pwd.type === 'password' ? 'text' : 'password';">👁</span>
+                            </div>
+                        </div>
+                        <!-- Role is kept for auth.js compatibility but styled seamlessly -->
+                        <div class="input-row role-row">
+                            <label>ROLE <span>*</span></label>
+                            <select id="role" required>
+                                <option value="student">Student</option>
+                                <option value="temporary">Temporary Inmate</option>
+                                <option value="lh_ac_committee">LH A&C Committee</option>
+                                <option value="lh_b_committee">LHB Committee</option>
+                                <option value="mha_committee">MHA Committee</option>
+                                <option value="mhb_committee">MHB Committee</option>
+                                <option value="warden">Warden</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <div class="login-actions">
+                            <button type="submit" class="btn-success-solid"><span class="check-icon">✔</span> Login</button>
+                            <a href="#" class="forgot-link" onclick="openForgotModal(event)">Forgot password?</a>
+                        </div>
+                        <div id="errorMsg" class="error-msg-gcek"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="plaque-container right-plaque">
+            <div class="plaque-content">
+                <h3>MISSION</h3>
+                <p>To contribute to the society by providing quality education and training, leading to innovation, entrepreneurship and sustainable growth</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="gcek-footer">
+        <p>© 2026 Etuwa Concepts. All rights reserved.</p>
+    </footer>
+    
+    <script src="/js/auth.js"></script>
+</body>
+</html>
